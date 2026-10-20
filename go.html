@@ -1,14 +1,36 @@
 ﻿<!doctype html>
-<html>
+<html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta http-equiv="refresh" content="0; url=https://profit-plastic-stake-obituaries.trycloudflare.com/?key=aSk2g5vho9CliH2g4LPHErQ6">
-  <title>Desert Crown Monitor</title>
-  <script>location.replace("https://profit-plastic-stake-obituaries.trycloudflare.com/?key=aSk2g5vho9CliH2g4LPHErQ6");</script>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Desert Crown Monitor</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font:14px system-ui,sans-serif;color:#123527;background:#f5f8f7}header{height:72px;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 16px;border-bottom:1px solid #cddbd3;background:white}h1{font-size:18px;margin:0}#status{font-size:12px;margin-top:4px;color:#52665c}button{background:#08794d;color:white;border:0;border-radius:6px;padding:10px 12px;font-weight:600;cursor:pointer}button:disabled{opacity:.6}iframe{width:100%;height:calc(100dvh - 72px);border:0;display:block}a{color:#08794d}#fallback{padding:12px;display:none}
+</style>
 </head>
-<body style="font-family:Arial,sans-serif;padding:24px">
-  <h3>Opening Desert Crown Monitor...</h3>
-  <p><a href="https://profit-plastic-stake-obituaries.trycloudflare.com/?key=aSk2g5vho9CliH2g4LPHErQ6">Tap here if it does not open automatically.</a></p>
-</body>
-</html>
+<body>
+<header><div><h1>Desert Crown Monitor</h1><div id="status" role="status">Connecting...</div></div><button id="refresh" type="button">Refresh Connection</button></header>
+<div id="fallback">Connection unavailable. PC server must be running. <a id="direct" target="_blank" rel="noopener">Open Monitor</a></div>
+<iframe id="monitor" title="Desert Crown live monitor" allow="clipboard-write"></iframe>
+<script>
+const button=document.getElementById('refresh'),status=document.getElementById('status'),frame=document.getElementById('monitor');
+let busy=false,lastUrl='';
+async function refresh(force=false){
+ if(busy)return;busy=true;button.disabled=true;
+ try{
+  status.textContent='Checking latest connection...';
+  const response=await fetch('latest.json?t='+Date.now(),{cache:'no-store',signal:AbortSignal.timeout(15000)});
+  if(!response.ok)throw Error('Connection details unavailable');
+  const data=await response.json(),url=new URL(data.url);
+  if(url.protocol!=='https:'||!url.hostname.endsWith('.trycloudflare.com'))throw Error('Invalid connection address');
+  document.getElementById('direct').href=url.href;
+  if(force||lastUrl!==url.href){frame.src=url.href;lastUrl=url.href;}
+  status.textContent='Latest link loaded. If offline, keep this page open.';
+  document.getElementById('fallback').style.display='none';
+ }catch(error){status.textContent='Waiting for PC connection. Retrying automatically...';document.getElementById('fallback').style.display='block';}
+ finally{busy=false;button.disabled=false;}
+}
+button.addEventListener('click',()=>refresh(true));
+setInterval(()=>refresh(false),20000);refresh();
+</script>
+</body></html>
+
